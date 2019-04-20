@@ -1,11 +1,15 @@
 import { Injectable, NgZone } from '@angular/core';
 import { User } from '../interface/mensaje.interface';
-import { auth } from 'firebase/app';
+import { auth, database } from 'firebase/app';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore, AngularFirestoreDocument, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Mensaje } from '../interface/mensaje.interface';
 import { Router } from '@angular/router';
-import {  map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
+import { TouchSequence } from 'selenium-webdriver';
+import { ThrowStmt } from '@angular/compiler';
+import * as CryptoJS from 'crypto-js';
+import { EncrDecrServiceService } from './encr-decr-service.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,20 +18,25 @@ import {  map } from 'rxjs/operators';
 export class AuthService {
   userData: any; // Save logged in user data
   private itemsCollection: AngularFirestoreCollection<Mensaje>;
-
+  private itemsCollection2: AngularFirestoreCollection;
   public chats: Mensaje[] = [];
+  private database: any = [];
+
+  private encryptText = '123456$#@$^@1ERF';
+
   constructor(
     public afs: AngularFirestore,   // Inject Firestore service
     public afAuth: AngularFireAuth, // Inject Firebase auth service
-    public router: Router,  
-    public ngZone: NgZone // NgZone service to remove outside scope warning
-  ) {    
+    public router: Router,
+    public ngZone: NgZone, // NgZone service to remove outside scope warning
+    private EncrDecr: EncrDecrServiceService
+  ) {
     /* Saving user data in localstorage when 
     logged in and setting up null when logged out */
     this.afAuth.authState.subscribe(user => {
       if (user) {
         this.userData = user;
-       
+
         localStorage.setItem('user', JSON.stringify(this.userData));
         JSON.parse(localStorage.getItem('user'));
       } else {
@@ -35,21 +44,45 @@ export class AuthService {
         JSON.parse(localStorage.getItem('user'));
       }
     })
-   
+
   }
-  cargarMensajes(userdata){
+  loadMessage(userdata) {
     this.itemsCollection = this.afs.collection<Mensaje>('items', ref => ref
-    .where('to', '==', userdata.email).orderBy('fecha','asc') );
+      .where('to', '==', this.EncrDecr.set(this.encryptText, userdata.email)).orderBy('date', 'asc'));
+
 
     return this.itemsCollection.valueChanges().pipe(
-                              map( (mensajes: Mensaje[]) =>{
-                                return this.chats = mensajes;
-                              })
+      map((mensajes: Mensaje[]) => {
+        
+        mensajes.forEach(element => {
+          element.from = this.EncrDecr.get(this.encryptText, element.from);
+          element.to = this.EncrDecr.get(this.encryptText, element.to);
+          element.message = this.EncrDecr.get(this.encryptText, element.message);
+        });
+        return this.chats = mensajes;
+      })
     )
 
 
   }
+  getdatabase() {
+    this.itemsCollection = this.afs.collection('items');
 
+    return this.itemsCollection.valueChanges().pipe(
+      map((mensajes) => {
+        return mensajes;
+      })
+    )
+  }
+  getdatabase2() {
+    this.itemsCollection = this.afs.collection('users');
+
+    return this.itemsCollection.valueChanges().pipe(
+      map((mensajes) => {
+        return mensajes;
+      })
+    )
+  }
   // Sign in with email/password
   SignIn(email, password) {
     return this.afAuth.auth.signInWithEmailAndPassword(email, password)
@@ -79,18 +112,18 @@ export class AuthService {
   // Send email verfificaiton when new user sign up
   SendVerificationMail() {
     return this.afAuth.auth.currentUser.sendEmailVerification()
-    .then(() => {
-      this.router.navigate(['verify-email-address']);
-    })
+      .then(() => {
+        this.router.navigate(['verify-email-address']);
+      })
   }
 
   ForgotPassword(passwordResetEmail) {
     return this.afAuth.auth.sendPasswordResetEmail(passwordResetEmail)
-    .then(() => {
-      window.alert('Password reset email sent, check your inbox.');
-    }).catch((error) => {
-      window.alert(error)
-    })
+      .then(() => {
+        window.alert('Password reset email sent, check your inbox.');
+      }).catch((error) => {
+        window.alert(error)
+      })
   }
 
   // Returns true when user is looged in and email is verified
@@ -99,21 +132,21 @@ export class AuthService {
     return (user !== null && user.emailVerified !== false) ? true : false;
   }
 
- 
+
 
   AuthLogin(provider) {
     return this.afAuth.auth.signInWithPopup(provider)
-    .then((result) => {
-       this.ngZone.run(() => {
+      .then((result) => {
+        this.ngZone.run(() => {
           this.router.navigate(['dashboard']);
         })
-      this.SetUserData(result.user);
-    }).catch((error) => {
-      window.alert(error)
-    })
+        this.SetUserData(result.user);
+      }).catch((error) => {
+        window.alert(error)
+      })
   }
 
-  
+
   SetUserData(user) {
     const userRef: AngularFirestoreDocument<any> = this.afs.doc(`users/${user.uid}`);
     const userData: User = {
@@ -125,7 +158,6 @@ export class AuthService {
       merge: true
     })
   }
-
   // Sign out 
   SignOut() {
     return this.afAuth.auth.signOut().then(() => {
@@ -133,17 +165,19 @@ export class AuthService {
       this.router.navigate(['sign-in']);
     })
   }
-  agregarMensaje( texto: string, para: string ){
+  addMessage(texto: string, para: string) {
+
+
 
     // TODO falta el UID del usuario
-    let mensaje: Mensaje = {
-      from:  this.userData.email,
-      mensaje: texto,
-      fecha: new Date().getTime(),
-      to: para
-    }
+    const mensaje: Mensaje = {
+      from: this.EncrDecr.set(this.encryptText, this.userData.email.trim()),
+      message: this.EncrDecr.set(this.encryptText, texto),
+      date: new Date().getTime(),
+      to: this.EncrDecr.set(this.encryptText, para)
+    };
 
-    return this.itemsCollection.add( mensaje );
+    return this.itemsCollection.add(mensaje);
 
   }
 

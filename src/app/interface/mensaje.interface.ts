@@ -1,8 +1,8 @@
 export interface Mensaje {
     from: string;
     to: string;
-    mensaje: string;
-    fecha?: number;
+    message: string;
+    date?: number;
 }
 export interface User {
     uid: string;
