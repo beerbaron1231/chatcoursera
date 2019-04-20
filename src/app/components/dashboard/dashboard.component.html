@@ -1,0 +1,68 @@
+<!-- Top navigation -->
+
+  
+  <!-- Sidebar navigation -->
+  <div class="container-fluid">
+    <div class="row">
+  
+      <nav class="col-md-2 d-md-block bg-light sidebar">
+        <div class="sidebar-sticky">
+          <ul class="nav flex-column">
+           
+            <li class="nav-item btn btn-outline-danger">
+              <a class="nav-link" (click)="authService.SignOut()">
+                <i class="fas fa-sign-out-alt"></i>Log out
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+  
+      <!-- Main content -->
+     
+      <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+          <div class="inner-adjust">
+    
+            <div class="pt-3 pb-2 mb-3 border-bottom">
+              <h1 class="h2">User Profile</h1>
+            </div>
+            <!-- Show user data when logged in -->
+            <div class="row" *ngIf="authService.userData as user">
+              <div class="col-md-12">
+                <div class="media">
+                  
+                  <div class="media-body">
+                    <h1>Hello: <strong>{{user.email}}</strong></h1>
+                  </div>
+                </div>
+              </div>
+            </div>
+    
+          </div>
+        </main>
+        <div class="container">
+           
+<h1>CHAT</h1>
+<hr>
+<div *ngIf="loading">LOADING...</div>
+<div class=" container chat-window" *ngIf="authService.userData">
+  <div class="app-mensajes" id="app-mensajes">
+    <div class="text-right" *ngFor="let chat of authService.chats ">
+
+      <span class="badge badge-primary">from: {{chat.from}}</span>
+      <p>{{chat.mensaje}}</p>
+    </div>
+  </div>
+
+<div class="form-group">
+  
+  <p><label >TO:</label><input type="text" name="to" class="form-control" [(ngModel)]="to" placeholder="to mail"></p>
+  <p><label>MENSAJE:</label><input type="text"name="mensaje"class="form-control" [(ngModel)]="mensaje" placeholder="enviar mensaje"></p>
+  <button  class="btn btn-success" (click)="enviar_mensaje()" [disabled]="!to || !mensaje">SEND</button>
+</div>
+</div>
+
+        </div>
+        
+    </div>
+  </div>
