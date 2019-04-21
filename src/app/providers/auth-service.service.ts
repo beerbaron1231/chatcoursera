@@ -31,7 +31,7 @@ export class AuthService {
     public ngZone: NgZone, // NgZone service to remove outside scope warning
     private EncrDecr: EncrDecrServiceService
   ) {
-    this.chats=[];
+    this.chats = [];
     /* Saving user data in localstorage when 
     logged in and setting up null when logged out */
     this.afAuth.authState.subscribe(user => {
@@ -48,14 +48,14 @@ export class AuthService {
 
   }
   loadMessage(userdata) {
-    this.chats=[];
+    this.chats = [];
     this.itemsCollection = this.afs.collection<Mensaje>('items', ref => ref
       .where('to', '==', this.EncrDecr.set(this.encryptText, userdata.email)).orderBy('date', 'asc'));
 
 
     return this.itemsCollection.valueChanges().pipe(
       map((mensajes: Mensaje[]) => {
-        
+
         mensajes.forEach(element => {
           element.from = this.EncrDecr.get(this.encryptText, element.from);
           element.to = this.EncrDecr.get(this.encryptText, element.to);
@@ -87,7 +87,7 @@ export class AuthService {
   }
   // Sign in with email/password
   SignIn(email, password) {
-    this.chats=[];
+    this.chats = [];
     return this.afAuth.auth.signInWithEmailAndPassword(email, password)
       .then((result) => {
         this.ngZone.run(() => {
@@ -131,7 +131,7 @@ export class AuthService {
 
   // Returns true when user is looged in and email is verified
   get isLoggedIn(): boolean {
-    this.chats=[];
+    this.chats = [];
     const user = JSON.parse(localStorage.getItem('user'));
     return (user !== null && user.emailVerified !== false) ? true : false;
   }
@@ -139,6 +139,7 @@ export class AuthService {
 
 
   AuthLogin(provider) {
+    this.chats = [];
     return this.afAuth.auth.signInWithPopup(provider)
       .then((result) => {
         this.ngZone.run(() => {
@@ -164,14 +165,13 @@ export class AuthService {
   }
   // Sign out 
   SignOut() {
+    this.chats = [];
     return this.afAuth.auth.signOut().then(() => {
       localStorage.removeItem('user');
       this.router.navigate(['sign-in']);
     })
   }
   addMessage(texto: string, para: string) {
-
-
 
     // TODO falta el UID del usuario
     const mensaje: Mensaje = {
