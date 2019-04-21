@@ -31,6 +31,7 @@ export class AuthService {
     public ngZone: NgZone, // NgZone service to remove outside scope warning
     private EncrDecr: EncrDecrServiceService
   ) {
+    this.chats=[];
     /* Saving user data in localstorage when 
     logged in and setting up null when logged out */
     this.afAuth.authState.subscribe(user => {
@@ -47,6 +48,7 @@ export class AuthService {
 
   }
   loadMessage(userdata) {
+    this.chats=[];
     this.itemsCollection = this.afs.collection<Mensaje>('items', ref => ref
       .where('to', '==', this.EncrDecr.set(this.encryptText, userdata.email)).orderBy('date', 'asc'));
 
@@ -85,6 +87,7 @@ export class AuthService {
   }
   // Sign in with email/password
   SignIn(email, password) {
+    this.chats=[];
     return this.afAuth.auth.signInWithEmailAndPassword(email, password)
       .then((result) => {
         this.ngZone.run(() => {
@@ -128,6 +131,7 @@ export class AuthService {
 
   // Returns true when user is looged in and email is verified
   get isLoggedIn(): boolean {
+    this.chats=[];
     const user = JSON.parse(localStorage.getItem('user'));
     return (user !== null && user.emailVerified !== false) ? true : false;
   }
