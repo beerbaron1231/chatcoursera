@@ -125,8 +125,8 @@ export class DashboardComponent implements OnInit {
     element.setAttribute('href', `data:${fileType};charset=utf-8,${encodeURIComponent(arg.text)}`);
     element.setAttribute('download', arg.fileName);
 
-    var event = new MouseEvent("click");
-    element.dispatchEvent(event);
+    //var event = new MouseEvent("click");
+    //element.dispatchEvent(event);
   }
 
 }
