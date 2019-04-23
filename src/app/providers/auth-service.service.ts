@@ -31,6 +31,7 @@ export class AuthService {
     public ngZone: NgZone, // NgZone service to remove outside scope warning
     private EncrDecr: EncrDecrServiceService
   ) {
+    this.itemsCollection = afs.collection<Mensaje>('items');
     this.chats = [];
     /* Saving user data in localstorage when 
     logged in and setting up null when logged out */
