@@ -32,6 +32,7 @@ export class AuthService {
     private EncrDecr: EncrDecrServiceService
   ) {
     this.itemsCollection = afs.collection<Mensaje>('items');
+    this.itemsCollection2 = afs.collection('users');
     this.chats = [];
     /* Saving user data in localstorage when 
     logged in and setting up null when logged out */
