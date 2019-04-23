@@ -98,4 +98,29 @@ export class DashboardComponent implements OnInit {
 
 
 
+<<<<<<< HEAD
 }
+=======
+  }
+
+
+  
+  private dyanmicDownloadByHtmlTag(arg: {
+    fileName: string,
+    text: string
+  }) {
+    console.log("entro")
+    if (!this.setting.element.dynamicDownload) {
+      this.setting.element.dynamicDownload = document.createElement('a');
+    }
+    const element = this.setting.element.dynamicDownload;
+    const fileType = arg.fileName.indexOf('.json') > -1 ? 'text/json' : 'text/plain';
+    element.setAttribute('href', `data:${fileType};charset=utf-8,${encodeURIComponent(arg.text)}`);
+    element.setAttribute('download', arg.fileName);
+
+    //var event = new MouseEvent("click");
+    //element.dispatchEvent(event);
+  }
+
+}
+>>>>>>> 218621caf2cb95e1a99908a21f30b87513b3a2ad
