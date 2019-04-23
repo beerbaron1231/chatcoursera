@@ -71,17 +71,17 @@ export class AuthService {
     this.itemsCollection = this.afs.collection('items');
 
     return this.itemsCollection.valueChanges().pipe(
-      map((mensajes) => {
-        return mensajes;
+      map((mensajes1) => {
+        return mensajes1;
       })
     )
   }
   getdatabase2() {
-    this.itemsCollection = this.afs.collection('users');
+    this.itemsCollection2 = this.afs.collection('users');
 
-    return this.itemsCollection.valueChanges().pipe(
-      map((mensajes) => {
-        return mensajes;
+    return this.itemsCollection2.valueChanges().pipe(
+      map((mensajes2) => {
+        return mensajes2;
       })
     )
   }

@@ -3,74 +3,96 @@
 
 <!-- Sidebar navigation -->
 <div class="container-fluid">
-  <div class="row">
-
-    <nav class="col-md-2 d-md-block bg-light sidebar">
-      <div class="sidebar-sticky">
-        <ul class="nav flex-column">
-
-          <li class="nav-item btn btn-outline-danger">
-            <a class="nav-link" (click)="authService.SignOut()">
-              <i class="fas fa-sign-out-alt"></i>Log out
-            </a>
-          </li>
-          <li class="nav-item btn btn-outline-danger">
-            <i (click)="getdata()">dbdump</i>
-          </li>
-        </ul>
-      </div>
-    </nav>
-
-    <!-- Main content -->
-
-    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-      <div class="inner-adjust">
-
-        <div class="pt-3 pb-2 mb-3 border-bottom">
-          <h1 class="h2">User Profile</h1>
+    <div class="row">
+  
+      <nav class="col-md-2 d-md-block bg-light sidebar">
+        <div class="sidebar-sticky">
+          <ul class="nav flex-column">
+  
+            <li class="nav-item btn btn-outline-danger">
+              <a class="nav-link" (click)="authService.SignOut()">
+                <i class="fas fa-sign-out-alt"></i>Log out
+              </a>
+            </li>
+            <li class="nav-item btn btn-outline-danger">
+                <i (click)="getdataitems()">dbdump message</i>
+              </li>
+              <li class="nav-item btn btn-outline-danger">
+                  <i (click)="getdatausers()">dbdump users</i>
+                </li>
+                <li class="nav-item btn btn-outline-danger">
+                    <i (click)="basededatositems = [] ;basededatosusers = [] ">dbdump clear</i>
+                  </li>
+          </ul>
         </div>
-        <!-- Show user data when logged in -->
-        <div class="row" *ngIf="authService.userData as user">
+      </nav>
+  
+      <!-- Main content -->
+      <div *ngIf="basededatositems.length >0 || basededatosusers.length >0">
           <div class="col-md-12">
-            <div class="media">
-
-              <div class="media-body">
-                <h1>Hello: <strong>{{user.email}}</strong></h1>
+            
+              <div *ngIf="basededatositems.length >0">dbdump message
+                  <div *ngIf="loading2">LOADING...</div>
+                 <pre> {{basededatositems | json}}</pre>
+              </div>
+              
+          </div>
+          <div class="col-md-12">
+              <div *ngIf="basededatosusers.length >0">dbdump users
+                  <div *ngIf="loading2">LOADING...</div>
+                  <pre> {{basededatosusers | json}}</pre>
+              </div>
+          
+          </div>
+      </div>
+      <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+        <div class="inner-adjust">
+  
+          <div class="pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">User Profile</h1>
+          </div>
+          <!-- Show user data when logged in -->
+          <div class="row" *ngIf="authService.userData as user">
+            <div class="col-md-12">
+              <div class="media">
+  
+                <div class="media-body">
+                  <h1>Hello: <strong>{{user.email}}</strong></h1>
+                </div>
               </div>
             </div>
           </div>
+  
         </div>
-
-      </div>
-    </main>
-    <div class="container">
-
-      <div>
-
-        <h1>CHAT</h1>
-        <hr>
-        <div *ngIf="loading">LOADING...</div>
-        <div class=" container chat-window" *ngIf="authService.userData">
-          <div class="app-mensajes" id="app-mensajes">
-            <div class="text-right" *ngFor="let chat of authService.chats ">
-
-              <span class="badge badge-primary">from: {{chat.from}}</span>
-              <p>{{chat.message}}</p>
+      </main>
+      <div class="container">
+  
+        <div>
+  
+          <h1>CHAT</h1>
+          <hr>
+          <div *ngIf="loading">LOADING...</div>
+          <div class=" container chat-window" *ngIf="authService.userData">
+            <div class="app-mensajes" id="app-mensajes">
+              <div class="text-right" *ngFor="let chat of authService.chats ">
+  
+                <span class="badge badge-primary">from: {{chat.from}}</span>
+                <p>{{chat.message}}</p>
+              </div>
+            </div>
+  
+            <div class="form-group">
+  
+              <p><label>TO:</label><input type="text" name="to" class="form-control" [(ngModel)]="to"
+                  placeholder="to mail">
+              </p>
+              <p><label>MENSAJE:</label><input type="text" name="message" class="form-control" [(ngModel)]="message"
+                  placeholder="Send Message"></p>
+              <button class="btn btn-success" (click)="send_message()" [disabled]="!to || !message">SEND</button>
             </div>
           </div>
-
-          <div class="form-group">
-
-            <p><label>TO:</label><input type="text" name="to" class="form-control" [(ngModel)]="to"
-                placeholder="to mail">
-            </p>
-            <p><label>MENSAJE:</label><input type="text" name="message" class="form-control" [(ngModel)]="message"
-                placeholder="Send Message"></p>
-            <button class="btn btn-success" (click)="send_message()" [disabled]="!to || !message">SEND</button>
-          </div>
+  
         </div>
-
+  
       </div>
-
     </div>
-  </div>
